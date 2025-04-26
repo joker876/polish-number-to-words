@@ -1,4 +1,4 @@
-import { PluralizerPL } from './plural';
+import { PluralizerPL } from './pluralize';
 
 const WORDS_0_TO_19 = [
   'zero',
@@ -70,9 +70,18 @@ const WORDS_THOUSAND_AND_MORE: PluralizerPL[] = [
   new PluralizerPL('decyliard', 'decyliardy', 'decyliardów'),
 ];
 
-export function numberToWordsPL(num: number): string {
-  if (num === 0) {
-    return WORDS_0_TO_19[0];
+export interface IntegerToWordsOptions {
+  explicitSingleThousand?: boolean;
+}
+
+export function integerToWordsPL(num: number, options?: IntegerToWordsOptions): string {
+  const optionsWithDefaults: Required<IntegerToWordsOptions> = {
+    explicitSingleThousand: false,
+    ...(options ?? {}),
+  };
+
+  if (num >= 0 && num <= 19) {
+    return WORDS_0_TO_19[num];
   }
 
   const parts: string[] = [];
@@ -83,15 +92,18 @@ export function numberToWordsPL(num: number): string {
   while (absNum > 0) {
     const groupNum = absNum % 1000;
     if (groupNum !== 0) {
-      const groupWords = groupIndex === 0 ? convertHundreds(groupNum) : convertGroupWithScale(groupNum, groupIndex);
-      parts.unshift(groupWords);
+      const groupWords =
+        groupIndex === 0
+          ? convertHundreds(groupNum)
+          : convertGroupWithScale(groupNum, groupIndex, optionsWithDefaults.explicitSingleThousand);
+      parts.push(groupWords);
     }
     absNum = Math.floor(absNum / 1000);
     groupIndex++;
   }
 
-  if (isNegative) parts.unshift('minus');
-  return parts.join(' ');
+  if (isNegative) parts.push('minus');
+  return parts.reverse().join(' ');
 }
 
 function convertHundreds(n: number): string {
@@ -115,12 +127,11 @@ function convertHundreds(n: number): string {
   return segs.join(' ');
 }
 
-function convertGroupWithScale(n: number, scaleIdx: number): string {
+function convertGroupWithScale(n: number, scaleIdx: number, explicitSingleThousand: boolean): string {
   const pluralizer = WORDS_THOUSAND_AND_MORE[scaleIdx - 1];
 
-  if (scaleIdx === 1 && n === 1) {
+  if (n === 1 && !explicitSingleThousand) {
     return pluralizer.pluralize(n);
   }
-
   return `${convertHundreds(n)} ${pluralizer.pluralize(n)}`;
 }

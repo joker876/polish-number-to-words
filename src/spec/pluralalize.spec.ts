@@ -1,4 +1,4 @@
-import { pluralizePl, PluralizerPL } from '../plural';
+import { pluralizePl, PluralizerPL } from '../pluralize';
 
 describe('pluralizePl with "kot", "koty", "kotów"', () => {
   const SINGULAR = 'kot';

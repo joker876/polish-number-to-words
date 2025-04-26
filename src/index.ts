@@ -1,2 +1,3 @@
-export * from './plural'
-export * from './standard'
+export * from './numberToWords'
+export * from './pluralize'
+
