@@ -6,6 +6,7 @@ describe('numberToWordsPL', () => {
     expect(numberToWordsPL(5)).toBe('pięć');
     expect(numberToWordsPL(123)).toBe('sto dwadzieścia trzy');
     expect(numberToWordsPL(1001)).toBe('tysiąc jeden');
+    expect(numberToWordsPL(-1_000_000)).toBe('minus milion');
   });
 
   describe('formal fractions (default behavior)', () => {
@@ -17,7 +18,7 @@ describe('numberToWordsPL', () => {
 
     it('should handle negative decimal numbers formally with "i"', () => {
       expect(numberToWordsPL(-2.5)).toBe('minus dwa i pięć dziesiątych');
-      expect(numberToWordsPL(-0.333)).toBe('trzysta trzydzieści trzy tysięczne');
+      expect(numberToWordsPL(-0.333)).toBe('minus trzysta trzydzieści trzy tysięczne');
       expect(numberToWordsPL(-10.01)).toBe('minus dziesięć i jedna setna');
     });
   });
@@ -42,7 +43,7 @@ describe('numberToWordsPL', () => {
           informalFraction: true,
           informalFractionFormIndividualNumberThreshold: 5,
         })
-      ).toBe('dwa przecinek trzysta czterdzieści pięć sześć');
+      ).toBe('dwa przecinek trzy tysiące czterysta pięćdziesiąt sześć');
 
       expect(
         numberToWordsPL(2.34567, {

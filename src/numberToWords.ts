@@ -1,3 +1,4 @@
+import { getDecimalPlaces } from './_utils';
 import { decimalFractionToWordsPL } from './decimalFractionToWords';
 import { integerToWordsPL } from './integerToWords';
 
@@ -25,7 +26,7 @@ export function numberToWordsPL(num: number, options?: NumberToWordsOptions): st
 
   const isNegative = num < 0;
   num = Math.abs(num);
-
+  
   const integerPart = Math.floor(num);
   const integerPartStr = integerToWordsPL(integerPart);
   if (Number.isInteger(num)) {
@@ -40,7 +41,9 @@ export function numberToWordsPL(num: number, options?: NumberToWordsOptions): st
     return (isNegative ? 'minus ' : '') + SPECIAL_FRACTION_FORMS[num];
   }
 
-  const fractionPart = num % 1;
+  const decimalPlaces = getDecimalPlaces(num);
+
+  const fractionPart = roundToPrecision(num % 1, decimalPlaces);
   const fractionPartStr = decimalFractionToWordsPL(fractionPart, {
     informal: optionsWithDefaults.informalFraction,
     informalFormIndividualNumberThreshold: optionsWithDefaults.informalFractionFormIndividualNumberThreshold,
@@ -57,4 +60,9 @@ export function numberToWordsPL(num: number, options?: NumberToWordsOptions): st
     (fractionPartUsesPrzecinek || isIntegerZero ? '' : 'i ') +
     fractionPartStr
   );
+}
+
+function roundToPrecision(value: number, precision: number): number {
+  const factor = Math.pow(10, precision);
+  return Math.round(value * factor) / factor;
 }

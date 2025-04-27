@@ -1,3 +1,4 @@
+import { getDecimalPlaces } from './_utils';
 import { commonFractionToWordsPL } from './commonFractionToWords';
 import { integerToWordsPL } from './integerToWords';
 
@@ -58,7 +59,7 @@ export function decimalFractionToWordsPL(num: number, options?: DecimalFractionT
   if (decimalPlaces < optionsWithDefaults.informalFormIndividualNumberThreshold) {
     parts.push(integerToWordsPL(Number(numAsString)));
   } else {
-    parts.push(...numAsString.split('').map(v => WORDS_0_TO_9[Number(v)]));
+    parts.push(...numAsString.split('').slice(0, decimalPlaces).map(v => WORDS_0_TO_9[Number(v)]));
   }
   return parts.filter(Boolean).join(' ');
 }
@@ -66,11 +67,6 @@ export function decimalFractionToWordsPL(num: number, options?: DecimalFractionT
 function fractionToInteger(n: number): number {
   const decimalPlaces = getDecimalPlaces(n);
   return Math.round(n * 10 ** decimalPlaces);
-}
-
-function getDecimalPlaces(n: number): number {
-  const str = n.toString();
-  return str.split('.')[1].length;
 }
 
 function simplifyFraction(numerator: number, denominator: number): { numerator: number; denominator: number } {
