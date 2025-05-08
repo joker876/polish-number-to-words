@@ -70,10 +70,25 @@ const WORDS_THOUSAND_AND_MORE: PluralizerPL[] = [
   new PluralizerPL('decyliard', 'decyliardy', 'decyliardów'),
 ];
 
+/**
+ * Options for integer-to-words conversion in Polish.
+ */
 export interface IntegerToWordsOptions {
+  /**
+   * Whether to explicitly include "jeden tysiąc" for 1000.
+   * If false, uses just "tysiąc".
+   */
   explicitSingleThousand?: boolean;
 }
 
+/**
+ * Converts an integer into its Polish word form.
+ * Handles numbers from negative billions to large scale names like "kwintylion".
+ *
+ * @param num The integer to convert.
+ * @param options Optional formatting behavior.
+ * @returns The number written out in Polish.
+ */
 export function integerToWordsPL(num: number, options?: IntegerToWordsOptions): string {
   const optionsWithDefaults: Required<IntegerToWordsOptions> = {
     explicitSingleThousand: false,

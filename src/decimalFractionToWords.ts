@@ -2,9 +2,25 @@ import { getDecimalPlaces } from './_utils';
 import { commonFractionToWordsPL } from './commonFractionToWords';
 import { integerToWordsPL } from './integerToWords';
 
+/**
+ * Options for converting decimal fractions to words in Polish.
+ */
 export interface DecimalFractionToWordsOptions {
+  /**
+   * If true, use the informal "digit-by-digit" style (e.g., "przecinek jeden dwa trzy").
+   * Otherwise, express as a proper fraction (e.g., "trzy setne").
+   */
   informal?: boolean;
+
+  /**
+   * Maximum number of decimal digits (inclusive) for which to use full number words
+   * instead of digit-by-digit spelling in informal mode.
+   */
   informalFormIndividualNumberThreshold?: number;
+
+  /**
+   * Whether to simplify the fraction before converting it (e.g., 25/100 → 1/4).
+   */
   simplifyFraction?: boolean;
 }
 
@@ -21,6 +37,15 @@ const WORDS_0_TO_9 = [
   'dziewięć',
 ] as const;
 
+/**
+ * Converts a decimal fraction into Polish words.
+ * Can return either a full fractional phrase (e.g., "dwanaście tysięcznych") or a digit-by-digit form (e.g., "przecinek dwanaście"). Ignores the minus sign.
+ *
+ * @param num A non-integer number between 0 and 1 (e.g., 0.25, 0.125, etc.).
+ * @param options Optional settings to customize the output style.
+ * @throws Will throw if an integer is provided instead of a decimal fraction.
+ * @returns A string representing the decimal fraction in Polish, ignoring the minus.
+ */
 export function decimalFractionToWordsPL(num: number, options?: DecimalFractionToWordsOptions): string {
   const optionsWithDefaults: Required<DecimalFractionToWordsOptions> = {
     informal: false,
@@ -43,11 +68,9 @@ export function decimalFractionToWordsPL(num: number, options?: DecimalFractionT
     const fractionDenominator = 10 ** decimalPlaces;
 
     if (!optionsWithDefaults.simplifyFraction) {
-      // nie skracamy ułamka
       return commonFractionToWordsPL(fractionNumerator, fractionDenominator);
     }
 
-    // skrócony ułamek
     const fraction = simplifyFraction(fractionNumerator, fractionDenominator);
     return commonFractionToWordsPL(fraction.numerator, fraction.denominator);
   }
@@ -59,7 +82,12 @@ export function decimalFractionToWordsPL(num: number, options?: DecimalFractionT
   if (decimalPlaces < optionsWithDefaults.informalFormIndividualNumberThreshold) {
     parts.push(integerToWordsPL(Number(numAsString)));
   } else {
-    parts.push(...numAsString.split('').slice(0, decimalPlaces).map(v => WORDS_0_TO_9[Number(v)]));
+    parts.push(
+      ...numAsString
+        .split('')
+        .slice(0, decimalPlaces)
+        .map(v => WORDS_0_TO_9[Number(v)])
+    );
   }
   return parts.filter(Boolean).join(' ');
 }

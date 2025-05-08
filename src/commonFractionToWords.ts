@@ -117,6 +117,14 @@ const COMPOUND_AMOUNTS_HUNDREDS: Record<number, string> = {
   900: 'dziewięciuset',
 };
 
+/**
+ * Converts a common fraction (numerator/denominator) to a Polish phrase.
+ * Returns grammatically correct feminine ordinal forms for denominators.
+ *
+ * @param numerator The numerator (e.g., 3)
+ * @param denominator The denominator (e.g., 4)
+ * @returns Polish words for the fraction (e.g., "trzy czwarte")
+ */
 export function commonFractionToWordsPL(numerator: number, denominator: number): string {
   const numeratorStr = convertNumerator(numerator);
   const denominatorStr = convertDenominator(denominator, numerator);
